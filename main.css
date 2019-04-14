@@ -1,0 +1,11 @@
+tr:nth-child(2n) {
+	background-color:#ddd;
+}
+td{
+	border-color:#333;
+	border-width:1px;
+	border-style:solid;
+	padding:0 1em;
+}
+
+table {border-collapse: collapse;}
