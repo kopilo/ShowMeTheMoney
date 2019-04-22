@@ -1,5 +1,6 @@
 <head>
 	<script src="includes/sorttable.js"></script>
+	<link href="includes/accordion.css" rel="stylesheet" type="text/css">
 </head>
 
 <?php 
@@ -87,6 +88,14 @@ var myChart = new Chart(ctx, {
 });
 </script>
 
+
+<div class="accordion">
+
+    <div class="option">
+      <input type="checkbox" id="toggle1" class="toggle" >
+      <label class="title" for="toggle1">Untagged Transactions</label>
+      <div class="content">
+
 <?php
 	//get untagged data
 	$untagged = "select * from transactions a 
@@ -99,7 +108,7 @@ order by detail;";
 	$untagged->execute();
 	$untagged = $untagged->fetchall(PDO::FETCH_ASSOC);
 
-	echo '<h2>Untagged Data</h2><table class="sortable" id="untagged-data"><thead>';
+	echo '<table class="sortable" id="untagged-data"><thead>';
 	$head = array_keys($untagged[0]);
 	foreach($head as $th){
 		echo"<th>".$th."</th>";
@@ -113,9 +122,17 @@ order by detail;";
 		echo "</tr>";
 	}
 	echo "</tbody></table>";
-	
+?>
+</div>
+    </div>
+
+    <div class="option">
+      <input type="checkbox" id="toggle2" class="toggle" />
+      <label class="title" for="toggle2">Tagged Transactions</label>
+      <div class="content"
+<?php	
 	/*table output*/
-	echo "<h2>Tagged Data</h2>";
+	echo "<h2>&nbsp;</h2>";
 	echo "<table class='sortable'>".PHP_EOL;
 	echo "<thead><th>Date</th><th>Detail</th><th>Amount</th><th>Tag</th></thead>";
 	foreach($rows as $row) {
@@ -129,3 +146,8 @@ order by detail;";
 	echo "</table>".PHP_EOL;
 	
 	?>
+	
+     </div>
+    </div>
+  </div>
+</div>
