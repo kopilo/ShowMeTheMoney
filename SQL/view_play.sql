@@ -3,3 +3,5 @@ create or replace view transaction_tags as (select id,dateCleared,detail,amount,
 select * from transactions a 
 NATURAL LEFT JOIN transaction_tags b
 WHERE b.id is null
+
+order by detail;
