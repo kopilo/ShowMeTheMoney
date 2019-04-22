@@ -60,8 +60,8 @@ function insertSQL($date,$details,$amount,$balance) {
 	$connection = new PDO("mysql:dbname=$db;host=$host",$username,$password);
 	$sql = "INSERT INTO transactions (dateCleared, details, amount, balance) VALUES (?, ?, ?, ?)";
 	$prepare = $connection->prepare($sql);
-	//$result = $prepare->execute([$date, $details, $amount, $balance]);
+	$result = $prepare->execute([$date, $details, $amount, $balance]);
 	//var_dump($prepare->errorInfo())
-	//var_dump($result);
+	var_dump($result);
 
 }
