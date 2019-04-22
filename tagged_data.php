@@ -1,3 +1,7 @@
+<head>
+	<script src="includes/sorttable.js"></script>
+</head>
+
 <?php 
 	error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -10,17 +14,15 @@ ini_set('display_errors', 1);
 	$connection = new PDO("mysql:dbname=$db;host=$host",$username,$password);
 	
 	//get chart data
-	$tags = "select dateCleared,detail,sum(amount) as total,tag from transactions,keyword_tag where detail like CONCAT('%',keyword_tag.keyword,'%') group by tag;";
+	$tags = "select dateCleared,detail,sum(amount) as total,tag from transaction_tags where tag <> 'INCOME' group by tag";
 	$prepare = $connection->prepare($tags);
 	$prepare->execute();
 	$chartdata = $prepare->fetchall(PDO::FETCH_ASSOC);
 	
-	
-	//compile data
-	//$sql = "select dateCleared,detail,amount,tag from transactions";
-	$sql = "select dateCleared,detail,amount,tag from transactions,keyword_tag where detail like CONCAT('%',keyword_tag.keyword,'%');";
+	//get table data
+	$sql = "select dateCleared,detail,amount,tag from transaction_tags where tag <> 'INCOME';";
 	$prepare = $connection->prepare($sql);
-
+	
 	//if successful :: output
 	if(!$prepare->execute()) die;
 	$rows = $prepare->fetchall(PDO::FETCH_ASSOC);
@@ -31,6 +33,8 @@ ini_set('display_errors', 1);
 <canvas id="myChart" width="400" height="400"></canvas>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
+ctx.canvas.width  = window.innerWidth;
+  ctx.canvas.height = window.innerHeight;
 var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -75,15 +79,44 @@ var myChart = new Chart(ctx, {
                     beginAtZero: true
                 }
             }]
-        }
+        },
+        legend: {
+			display:false,
+		}
     }
 });
 </script>
 
 <?php
+	//get untagged data
+	$untagged = "select * from transactions a 
+NATURAL LEFT JOIN transaction_tags b
+WHERE b.id is null
+
+order by detail;";
+
+	$untagged = $connection->prepare($untagged);
+	$untagged->execute();
+	$untagged = $untagged->fetchall(PDO::FETCH_ASSOC);
+
+	echo '<h2>Untagged Data</h2><table class="sortable" id="untagged-data"><thead>';
+	$head = array_keys($untagged[0]);
+	foreach($head as $th){
+		echo"<th>".$th."</th>";
+	}
+	echo "</thead><tbody>";
+	foreach ($untagged as $row) {
+		echo "<tr>";
+		foreach($row as $key=>$value) {
+			echo "<td>".$value."</td>";
+		}
+		echo "</tr>";
+	}
+	echo "</tbody></table>";
 	
 	/*table output*/
-	echo "<table>".PHP_EOL;
+	echo "<h2>Tagged Data</h2>";
+	echo "<table class='sortable'>".PHP_EOL;
 	echo "<thead><th>Date</th><th>Detail</th><th>Amount</th><th>Tag</th></thead>";
 	foreach($rows as $row) {
 		//var_dump($row);
