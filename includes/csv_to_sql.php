@@ -27,7 +27,9 @@ foreach($csvdata as $line) {
 	$date = $data[0];
 	$details = $data[1];
 	$amount = str_replace('$','',$data[2]);
+	$amount = str_replace(',','',$amount);
 	$balance = str_replace('$','',$data[3]);
+	$balance = str_replace(',','',$balance);
 	
 	insertSQL($date,$details,$amount,$balance);
 }
@@ -58,7 +60,7 @@ function insertSQL($date,$details,$amount,$balance) {
 	$db="showmethemoney";
 	
 	$connection = new PDO("mysql:dbname=$db;host=$host",$username,$password);
-	$sql = "INSERT INTO transactions (dateCleared, details, amount, balance) VALUES (?, ?, ?, ?)";
+	$sql = "INSERT INTO transactions (dateCleared, detail, amount, balance) VALUES (?, ?, ?, ?)";
 	$prepare = $connection->prepare($sql);
 	$result = $prepare->execute([$date, $details, $amount, $balance]);
 	//var_dump($prepare->errorInfo())
